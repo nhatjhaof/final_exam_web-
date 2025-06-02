@@ -1,20 +1,23 @@
-import { Request, Response } from "express"
-import webRoutes from "routes/web";
+// src/app.ts
+import express from "express";
+import { convertImages } from "../prisma/scripts/convertBase64ToImage";
+import { mapRelations } from "../prisma/scripts/mapping";
+import webRoutes from "../src/routes/web";
+import path from "path";
 
-const express = require('express')
-const app = express()
-const port = 8081
+const app = express();
+const port = 8081;
 
-//config web static
-app.use(express.static('public'));
+(async () => {
+  await convertImages();
+  await mapRelations();
 
-//config view engine
-app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views');
+  app.use(express.static("public"));
+  app.set("view engine", "ejs");
+  app.set("views", path.join(__dirname, "views"));
+  webRoutes(app);
 
-//config web routes
-webRoutes(app);
-
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+  app.listen(port, () => {
+    console.log(`✅ Server is running on http://localhost:${port}`);
+  });
+})();

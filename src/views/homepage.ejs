@@ -23,11 +23,11 @@
       </thead>
       <tbody>
         <% cars.forEach(function (car) { %>
-          <tr>
+          <tr data-owner="<%= car.owner_info %>">
             <td><%= car.id %></td>
             <td>
                 <% if (car.image_path) { %>
-                    <img src="/images/vehicle<%= car.image_path %>" width="150" />
+                    <img src="/images/vehicle/<%= car.image_path %>" width="150" />
                 <% } else { %>
                     <span>No image</span>
                 <% } %>
@@ -35,16 +35,35 @@
             <td><%= new Date(car.capture_time).toLocaleString() %></td>
             <td><%= car.speed %></td>
             <td>
-              <% if (car.image_license_data) { %>
-                <img src="data:image/jpeg;base64,<%= car.image_license_data %>" alt="Plate" class="plate-img" />
+              <% if (car.license_plate && car.license_plate.image_path) { %>
+                <img src="/images/license_plates/<%= car.license_plate.image_path %>" alt="Plate" class="plate-img" width="80" height="40" />
               <% } else { %>
-                <span>–</span>
+                <span>No image</span>
               <% } %>
             </td>
           </tr>
         <% }) %>
       </tbody>
     </table>
+
+    <!-- Vùng hiển thị thông tin chủ xe -->
+    <div id="owner-info"></div>
   </div>
+
+  <!-- Script xử lý hiển thị thông tin chủ xe -->
+  <script>
+    const rows = document.querySelectorAll('.vehicle-table tbody tr');
+    const infoDiv = document.getElementById('owner-info');
+
+    rows.forEach(row => {
+      row.addEventListener('mouseover', () => {
+        const owner = row.dataset.owner;
+        infoDiv.textContent = 'Thông tin chủ xe: ' + (owner || 'Không có');
+      });
+      row.addEventListener('mouseleave', () => {
+        infoDiv.textContent = '';
+      });
+    });
+  </script>
 </body>
 </html>

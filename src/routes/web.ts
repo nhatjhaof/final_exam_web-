@@ -1,4 +1,4 @@
-import { getHomePage } from "controllers/home.controller";
+import { getHomePage } from "../controllers/home.controller";
 import express, { Express } from "express";
 
 const router = express.Router();
