@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Vehicle Detection System</title>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+
+<body>
+  <div class="header">Vehicle Detection System</div>
+
+  <div class="container">
+    <table class="vehicle-table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Vehicle Image</th>
+          <th>Timestamp</th>
+          <th>Speed (km/h)</th>
+          <th>License Plate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% cars.forEach(function (car) { %>
+          <tr>
+            <td><%= car.id %></td>
+            <td>
+                <% if (car.image_path) { %>
+                    <img src="/images/vehicle<%= car.image_path %>" width="150" />
+                <% } else { %>
+                    <span>No image</span>
+                <% } %>
+            </td>
+            <td><%= new Date(car.capture_time).toLocaleString() %></td>
+            <td><%= car.speed %></td>
+            <td>
+              <% if (car.image_license_data) { %>
+                <img src="data:image/jpeg;base64,<%= car.image_license_data %>" alt="Plate" class="plate-img" />
+              <% } else { %>
+                <span>–</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

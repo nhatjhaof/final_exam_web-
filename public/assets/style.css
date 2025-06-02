@@ -1,0 +1,59 @@
+body {
+  background-color: #121212;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  background-color: #28a745;
+  padding: 20px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 1px;
+}
+
+.container {
+  padding: 30px;
+  overflow-x: auto;
+}
+
+table.vehicle-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.vehicle-table th, .vehicle-table td {
+  padding: 12px 10px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+
+.vehicle-table th {
+  background-color: #2c2c2c;
+  color: #00ff99;
+  font-size: 16px;
+}
+
+.vehicle-table tbody tr:hover {
+  background-color: #292929;
+}
+
+.vehicle-table img {
+  height: 80px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #000;
+}
+
+.plate-img {
+  height: 40px;
+}
