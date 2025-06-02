@@ -1,4 +1,4 @@
-import { prisma } from "config/client";
+import { prisma } from "../config/client";
 import fs from 'fs';
 import path from 'path';
 async function main() {
