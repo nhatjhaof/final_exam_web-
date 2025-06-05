@@ -9,34 +9,37 @@ const getAllCar = async () => {
     });
     return cars;
 };
-const getDetailCar = async() =>{
-    const owners = await prisma.license_plates.findMany({
-        include: {
-            owner: true
+const getOwnerInfoByLp = async (lp: string) =>{
+    const owner = await prisma.vehicle_details.findFirst({
+        where:{
+            license_plate: lp
         }
     });
-    return owners;
+    return owner;
 }
-const carsWithOwnerInfo = async () => {
-  const cars = await getAllCar();
-  const owners = await getDetailCar();
+const handleUpdateLicensePlate = async (
+    vehicleId: number
+    ,license_plate: string ) =>{
+    try {
+        const vehicle = await prisma.vehicle_images.findUnique({
+            where:{
+                id: vehicleId
+            }
+        });
+        if(!vehicle || !(await vehicle).license_plate_id){
+            console.log("no found vehicle or license_plate_id");
+        }
+        await prisma.license_plates.update({
+            where:{
+                id: vehicle.license_plate_id
+            },
+            data:{
+                license_plate: license_plate
+            }
+        })
+    } catch (err) {
+        console.error(err);
+    }
+}
 
-  const carsWithOwnerInfo = cars.map((car) => {
-    const licensePlateNumber = car.license_plate?.license_plate;
-    const matched = owners.find((lp) => lp.license_plate === licensePlateNumber);
-    const owner = matched?.owner;
-
-    const ownerInfo = owner
-      ? `SĐT: ${owner.phone_number || "N/A"}, CCCD: ${owner.citizen_id || "N/A"}, Địa chỉ: ${owner.address || "N/A"}`
-      : "Không có thông tin";
-
-    return {
-      ...car, // giữ nguyên thông tin xe
-      owner_info: ownerInfo,
-    };
-  });
-
-  return carsWithOwnerInfo;
-};
-
-export { getAllCar, getDetailCar, carsWithOwnerInfo}
+export { getAllCar, getOwnerInfoByLp, handleUpdateLicensePlate}

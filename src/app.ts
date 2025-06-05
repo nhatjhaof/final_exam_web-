@@ -9,15 +9,39 @@ const app = express();
 const port = 8081;
 
 (async () => {
+  //Convert ảnh + map biển số 1 lần duy nhất khi khởi động
   await convertImages();
   await mapRelations();
 
+  //Thiết lập cấu hình Express
   app.use(express.static("public"));
+  app.use(express.json());
   app.set("view engine", "ejs");
   app.set("views", path.join(__dirname, "views"));
+
+  //Khai báo router
   webRoutes(app);
 
+  //Khởi động server
   app.listen(port, () => {
-    console.log(`✅ Server is running on http://localhost:${port}`);
+    console.log(`Server is running at http://localhost:${port}`);
   });
+
+  //Auto-convert ảnh mới mỗi 10 giây
+  setInterval(async () => {
+    console.log("Auto converting new images...");
+    try {
+      await convertImages();
+    } catch (err) {
+      console.error("Auto convert error:", err);
+    }
+  }, 3000);
+  setInterval(async () => {
+  console.log("Auto mapping license plates...");
+  try {
+    await mapRelations();
+  } catch (err) {
+    console.error("Auto mapping error:", err);
+  }
+}, 3000);
 })();

@@ -23,17 +23,19 @@ body {
 
 table.vehicle-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 0 10px #00000055;
 }
 
 .vehicle-table th, .vehicle-table td {
-  padding: 12px 10px;
+  padding: 14px 12px;
   text-align: center;
   border-bottom: 1px solid #333;
+  vertical-align: middle;
 }
 
 .vehicle-table th {
@@ -44,6 +46,7 @@ table.vehicle-table {
 
 .vehicle-table tbody tr:hover {
   background-color: #292929;
+  cursor: pointer;
 }
 
 .vehicle-table img {
@@ -52,20 +55,66 @@ table.vehicle-table {
   border-radius: 6px;
   border: 1px solid #444;
   background-color: #000;
+  padding: 4px;
 }
 
 .plate-img {
   width: 80px;
   height: auto;
   border-radius: 4px;
-  margin-right: 4px;
+  margin: 0 auto;
 }
+
 #owner-info {
   margin-top: 20px;
   font-size: 1.1em;
   color: white;
 }
-tr:hover {
-  background-color: #1f1f1f;
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: #00ccff;
+  margin-left: 6px;
   cursor: pointer;
+  font-size: 14px;
+}
+
+.edit-btn:hover {
+  color: #66e0ff;
+}
+
+.view-btn {
+  padding: 6px 14px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.view-btn:hover {
+  background-color: #0056b3;
+}
+
+.notification {
+  display: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  font-weight: bold;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.notification.success {
+  background-color: #28a745;
+  color: white;
+}
+.notification.error {
+  background-color: #dc3545;
+  color: white;
 }

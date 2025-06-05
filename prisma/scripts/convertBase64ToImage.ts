@@ -31,6 +31,6 @@ export const convertImages = async() => {
     });
   }
 
-console.log('🎉 Convert hoàn tất!');
+console.log('Convert hoàn tất!');
 }
 

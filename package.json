@@ -5,12 +5,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon",
-    "dev": "nodemon --watch src --exec ts-node src/app.ts",
+    "dev": "nodemon --watch src --watch prisma/scripts --exec ts-node prisma/scripts/startAll.ts",
     "start:debug": "nodemon --inspect=9229 -e ts,tsx --exec node -r ts-node/register  -r tsconfig-paths/register ./src/app.ts"
   },
   "nodemonConfig": {
     "watch": [
-      "src"
+      "src",
+      "prisma/scripts"
     ],
     "ext": "ts,ejs",
     "ignore": [

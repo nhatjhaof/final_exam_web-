@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thông Tin Chủ Xe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/style.css" />
+  <link rel="stylesheet" href="/assets/owner-info.css" />
+</head>
+<body>
+  <div class="header">Thông Tin Chủ Xe</div>
+
+  <div class="container" style="max-width: 600px; margin: 0 auto;">
+    <form class="owner-form" method="POST" action="/update-owner">
+      <input type="text" id="id" name="id" readonly style="display: none;" />
+
+      <label for="phone_number">📱 Số điện thoại</label>
+      <input type="text" id="phone_number" name="phone_number" placeholder="Nhập số điện thoại" />
+
+      <label for="citizen_id">🆔 Số CCCD</label>
+      <input type="text" id="citizen_id" name="citizen_id" placeholder="Nhập số căn cước công dân" />
+
+      <label for="address">🏠 Địa chỉ</label>
+      <input type="text" id="address" name="address" placeholder="Nhập địa chỉ" />
+
+      <label for="license_plate">🚗 Biển số xe</label>
+      <input type="text" id="license_plate" name="license_plate" placeholder="Nhập biển số xe" />
+
+      <label for="personal_image_data">🖼️ Ảnh chân dung</label>
+      <div class="image-preview" id="imagePreview">
+        <img id="previewImage" src="/images/owners/default.jpg" alt="Ảnh chân dung" />
+      </div>
+
+      <div class="form-actions">
+        <a href="/" class="btn btn-back">← Quay về</a>
+        <button type="submit" class="btn btn-update">Cập nhật</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

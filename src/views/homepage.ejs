@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <title>Vehicle Detection System</title>
   <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
 </head>
 
 <body>
@@ -19,51 +21,118 @@
           <th>Timestamp</th>
           <th>Speed (km/h)</th>
           <th>License Plate</th>
+          <th>Plate Image</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <% cars.forEach(function (car) { %>
-          <tr data-owner="<%= car.owner_info %>">
+          <tr>
             <td><%= car.id %></td>
             <td>
-                <% if (car.image_path) { %>
-                    <img src="/images/vehicle/<%= car.image_path %>" width="150" />
-                <% } else { %>
-                    <span>No image</span>
-                <% } %>
+              <% if (car.image_path) { %>
+                <img src="/images/vehicle/<%= car.image_path %>" />
+              <% } else { %>
+                <span>No image</span>
+              <% } %>
             </td>
             <td><%= new Date(car.capture_time).toLocaleString() %></td>
             <td><%= car.speed %></td>
             <td>
-              <% if (car.license_plate && car.license_plate.image_path) { %>
-                <img src="/images/license_plates/<%= car.license_plate.image_path %>" alt="Plate" class="plate-img" width="80" height="40" />
+              <span class="plate-text" data-id="<%= car.id %>"><%= car.license_plate?.license_plate || 'N/A' %></span>
+              <input class="plate-input"
+                data-id="<%= car.id %>"
+                value="<%= car.license_plate?.license_plate || '' %>"
+                style="display: none;" />
+              <button class="edit-btn" data-id="<%= car.id %>">
+                <i class="fas fa-pen"></i>
+              </button>
+            </td>
+            <td>
+              <% if (car.license_plate?.image_path) { %>
+                <img src="/images/license_plates/<%= car.license_plate.image_path %>" alt="Plate" class="plate-img" />
               <% } else { %>
                 <span>No image</span>
               <% } %>
+            </td>
+            <td>
+              <a href="/owner-info/<%= car.license_plate?.license_plate %>">
+                <button class="view-btn">View</button>
+              </a>
             </td>
           </tr>
         <% }) %>
       </tbody>
     </table>
-
-    <!-- Vùng hiển thị thông tin chủ xe -->
-    <div id="owner-info"></div>
   </div>
 
-  <!-- Script xử lý hiển thị thông tin chủ xe -->
-  <script>
-    const rows = document.querySelectorAll('.vehicle-table tbody tr');
-    const infoDiv = document.getElementById('owner-info');
+  <!-- Notification message -->
+  <div id="notification" class="notification"></div>
 
-    rows.forEach(row => {
-      row.addEventListener('mouseover', () => {
-        const owner = row.dataset.owner;
-        infoDiv.textContent = 'Thông tin chủ xe: ' + (owner || 'Không có');
-      });
-      row.addEventListener('mouseleave', () => {
-        infoDiv.textContent = '';
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Show notification
+    function showNotification(message, type) {
+      const noti = document.getElementById('notification');
+      noti.textContent = message;
+      noti.className = `notification ${type}`;
+      noti.style.display = 'block';
+
+      setTimeout(() => {
+        noti.style.display = 'none';
+      }, 2500);
+    }
+
+    // Click edit to enable input
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const span = document.querySelector(`.plate-text[data-id="${id}"]`);
+        const input = document.querySelector(`.plate-input[data-id="${id}"]`);
+
+        span.style.display = 'none';
+        input.style.display = 'inline';
+        input.focus();
       });
     });
-  </script>
+
+    // Handle Enter to save update
+    document.querySelectorAll('.plate-input').forEach(input => {
+      input.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault(); // Ngăn form submit mặc định (nếu có)
+
+          const id = input.dataset.id;
+          const newPlate = input.value.trim();
+
+          if (newPlate.length < 8) {
+            showNotification("Biển số phải có ít nhất 8 ký tự!", "error");
+            return;
+          }
+
+          try {
+            const res = await fetch('/update-license-plate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ vehicleId: id, license_plate: newPlate })
+            });
+
+            if (res.ok) {
+              const span = document.querySelector(`.plate-text[data-id="${id}"]`);
+              span.textContent = newPlate;
+              span.style.display = 'inline';
+              input.style.display = 'none';
+              showNotification("Cập nhật thành công!", "success");
+            } else {
+              showNotification("Không thể cập nhật!", "error");
+            }
+          } catch (err) {
+            showNotification("Lỗi kết nối server!", "error");
+          }
+        }
+      });
+    });
+  });
+</script>
 </body>
 </html>
