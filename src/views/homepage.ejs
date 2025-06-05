@@ -105,8 +105,8 @@
           const id = input.dataset.id;
           const newPlate = input.value.trim();
 
-          if (newPlate.length < 8) {
-            showNotification("Biển số phải có ít nhất 8 ký tự!", "error");
+          if (newPlate.length < 7) {
+            showNotification("Biển số phải có ít nhất 7 ký tự!", "error");
             return;
           }
 

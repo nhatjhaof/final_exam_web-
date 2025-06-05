@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAllCar, getOwnerInfoByLp, handleUpdateLicensePlate } from "../services/car.service";
+import { getAllCar, getOwnerInfoByLp, handleUpdateLicensePlate, handleUpdateOwnerInfo } from "../services/car.service";
 
 const getHomePage = async (req: Request, res: Response) => {
     const cars = await getAllCar();
@@ -21,4 +21,12 @@ const postUpdateLicensePlate = async (req: Request, res: Response) => {
     await handleUpdateLicensePlate(Number(vehicleId), license_plate);
     return res.redirect("/home");
 }
-export { getHomePage, getOwnerInfo, postUpdateLicensePlate }
+
+const postUpdateOwnerInfo = async (req: Request, res: Response) => {
+    const {id, phone_number, citizen_id, address, license_plate} = req.body;
+    const file = req.file;
+    const personal_image = file?.filename ?? "";
+    await handleUpdateOwnerInfo(id, phone_number, citizen_id, address, license_plate, personal_image);
+    return res.redirect("/home");
+}
+export { getHomePage, getOwnerInfo, postUpdateLicensePlate, postUpdateOwnerInfo }
