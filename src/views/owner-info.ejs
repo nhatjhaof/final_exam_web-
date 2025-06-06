@@ -9,61 +9,72 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script>
-        $(document).ready(() => {
-            const avatarFile = $("#avatarFile");
-            avatarFile.change(function (e) {
-                const imgURL = URL.createObjectURL(e.target.files[0]);
-                $("#avatarPreview").attr("src", imgURL);
-                $("#avatarPreview").css({ "display": "block" });
-            });
-        });
-    </script>
+    $(document).ready(() => {
+      const avatarFile = $("#avatarFile");
+      avatarFile.change(function (e) {
+        const imgURL = URL.createObjectURL(e.target.files[0]);
+        $("#avatarPreview").attr("src", imgURL).css({ display: "block" });
+      });
+    });
+  </script>
 </head>
 <body>
   <div class="header">Thông Tin Chủ Xe</div>
 
   <div class="container" style="max-width: 600px; margin: 0 auto;">
-    <form class="owner-form" method="POST" action="/update-owner" enctype="multipart/form-data">
-      <input type="text" name="id" value="<%= owner.id %>" readonly style="display: none;" />
-      
-      <div class="mb-3">
-        <label for="phone_number">📱 Số điện thoại</label>
-        <input type="text" value="<%= owner.phone_number %>" name="phone_number" placeholder="Nhập số điện thoại" />
+
+    <% if (!owner) { %>
+      <div class="alert alert-warning" style="color: red; text-align: center; font-weight: bold; padding: 1rem; border: 1px solid red; background-color: #ffeaea; border-radius: 8px;">
+        ❌ Không tìm thấy thông tin chủ xe!
       </div>
-      
-      <div class="mb-3">
-        <label for="citizen_id">🆔 Số CCCD</label>
-        <input type="text" value="<%= owner.citizen_id %>" name="citizen_id" placeholder="Nhập số căn cước công dân" />
+      <div class="form-actions" style="text-align: center; margin-top: 1rem;">
+        <a href="/home" class="btn btn-back">← Quay về</a>
       </div>
-      
-      <div class="mb-3">
-        <label for="address">🏠 Địa chỉ</label>
-        <input type="text" value="<%= owner.address %>" name="address" placeholder="Nhập địa chỉ" />
-      </div>
-      
-      <div class="mb-3">
-        <label for="license_plate">🚗 Biển số xe</label>
-        <input type="text" value="<%= owner.license_plate %>" name="license_plate" placeholder="Nhập biển số xe" />
-      </div>
-      
-      <div class="mb-3">
-        <label for="formFile" class="form-label">🖼️ Ảnh chân dung</label>
-        <input name="personal-image" class="form-control" type="file" id="avatarFile"
-          accept=".png, .jpg, .jpeg">
-      </div>
+    <% } else { %>
+
+      <form class="owner-form" method="POST" action="/update-owner" enctype="multipart/form-data">
+        <input type="text" name="id" value="<%= owner.id %>" readonly style="display: none;" />
+
+        <div class="mb-3">
+          <label for="phone_number">📱 Số điện thoại</label>
+          <input type="text" value="<%= owner.phone_number || '' %>" name="phone_number" placeholder="Nhập số điện thoại" />
+        </div>
+
+        <div class="mb-3">
+          <label for="citizen_id">🆔 Số CCCD</label>
+          <input type="text" value="<%= owner.citizen_id || '' %>" name="citizen_id" placeholder="Nhập số căn cước công dân" />
+        </div>
+
+        <div class="mb-3">
+          <label for="address">🏠 Địa chỉ</label>
+          <input type="text" value="<%= owner.address || '' %>" name="address" placeholder="Nhập địa chỉ" />
+        </div>
+
+        <div class="mb-3">
+          <label for="license_plate">🚗 Biển số xe</label>
+          <input type="text" value="<%= owner.license_plate || '' %>" name="license_plate" placeholder="Nhập biển số xe" />
+        </div>
+
+        <div class="mb-3">
+          <label for="formFile" class="form-label">🖼️ Ảnh chân dung</label>
+          <input name="personal-image" class="form-control" type="file" id="avatarFile" accept=".png, .jpg, .jpeg">
+        </div>
+
         <% if (owner.personal_image_data) { %>
           <img style="max-height: 250px; display: block;" alt="avatar preview"
-            id="avatarPreview" src="/images/<%= owner.personal_image_data %> " />
+            id="avatarPreview" src="/images/<%= owner.personal_image_data %>" />
         <% } else { %>
-           <img style="max-height: 250px; display: none;" alt="avatar preview"
+          <img style="max-height: 250px; display: none;" alt="avatar preview"
             id="avatarPreview" />
         <% } %>
 
-      <div class="form-actions">
-        <a href="/home" class="btn btn-back">← Quay về</a>
-        <button type="submit" class="btn btn-update">Cập nhật</button>
-      </div>
-    </form>
+        <div class="form-actions">
+          <a href="/home" class="btn btn-back">← Quay về</a>
+          <button type="submit" class="btn btn-update">Cập nhật</button>
+        </div>
+      </form>
+
+    <% } %>
   </div>
 </body>
 </html>

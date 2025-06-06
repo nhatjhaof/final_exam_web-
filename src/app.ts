@@ -4,8 +4,10 @@ import { convertImages } from "../prisma/scripts/convertBase64ToImage";
 import { mapRelations } from "../prisma/scripts/mapping";
 import webRoutes from "../src/routes/web";
 import path from "path";
+import pollingRoute from "./routes/polling.route";
 
 const app = express();
+app.disable("etag");
 const port = 8081;
 
 (async () => {
@@ -16,6 +18,7 @@ const port = 8081;
   //Thiết lập cấu hình Express
   app.use(express.static("public"));
   app.use(express.json());
+  app.use(pollingRoute);
   app.set("view engine", "ejs");
   app.set("views", path.join(__dirname, "views"));
 
@@ -23,7 +26,7 @@ const port = 8081;
   webRoutes(app);
 
   //Khởi động server
-  app.listen(port, () => {
+  app.listen(port, "0.0.0.0", () => {
     console.log(`Server is running at http://localhost:${port}`);
   });
 
@@ -35,7 +38,7 @@ const port = 8081;
     } catch (err) {
       console.error("Auto convert error:", err);
     }
-  }, 3000);
+  }, 10000);
   setInterval(async () => {
   console.log("Auto mapping license plates...");
   try {
@@ -43,5 +46,5 @@ const port = 8081;
   } catch (err) {
     console.error("Auto mapping error:", err);
   }
-}, 3000);
+}, 10000);
 })();

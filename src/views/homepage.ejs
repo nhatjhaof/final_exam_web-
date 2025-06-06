@@ -16,7 +16,7 @@
     <table class="vehicle-table">
       <thead>
         <tr>
-          <th>Id</th>
+          <!-- <th>Id</th> -->
           <th>Vehicle Image</th>
           <th>Timestamp</th>
           <th>Speed (km/h)</th>
@@ -26,43 +26,42 @@
         </tr>
       </thead>
       <tbody>
-        <% cars.forEach(function (car) { %>
-          <tr>
-            <td><%= car.id %></td>
-            <td>
-              <% if (car.image_path) { %>
-                <img src="/images/vehicle/<%= car.image_path %>" />
-              <% } else { %>
-                <span>No image</span>
-              <% } %>
-            </td>
-            <td><%= new Date(car.capture_time).toLocaleString() %></td>
-            <td><%= car.speed %></td>
-            <td>
-              <span class="plate-text" data-id="<%= car.id %>"><%= car.license_plate?.license_plate || 'N/A' %></span>
-              <input class="plate-input"
-                data-id="<%= car.id %>"
-                value="<%= car.license_plate?.license_plate || '' %>"
-                style="display: none;" />
-              <button class="edit-btn" data-id="<%= car.id %>">
-                <i class="fas fa-pen"></i>
-              </button>
-            </td>
-            <td>
-              <% if (car.license_plate?.image_path) { %>
-                <img src="/images/license_plates/<%= car.license_plate.image_path %>" alt="Plate" class="plate-img" />
-              <% } else { %>
-                <span>No image</span>
-              <% } %>
-            </td>
-            <td>
-              <a href="/owner-info/<%= car.license_plate?.license_plate %>">
-                <button class="view-btn">View</button>
-              </a>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
+  <% cars.forEach(function (car) { %>
+    <tr data-id="<%= car.id %>">
+      <td>
+        <% if (car.image_path) { %>
+          <img src="/images/vehicle/<%= car.image_path %>" />
+        <% } else { %>
+          <span>No image</span>
+        <% } %>
+      </td>
+      <td><%= new Date(car.capture_time).toLocaleString() %></td>
+      <td><%= car.speed %></td>
+      <td>
+        <span class="plate-text" data-id="<%= car.id %>"><%= car.license_plate?.license_plate || 'N/A' %></span>
+        <input class="plate-input"
+          data-id="<%= car.id %>"
+          value="<%= car.license_plate?.license_plate || '' %>"
+          style="display: none;" />
+        <button class="edit-btn" data-id="<%= car.id %>">
+          <i class="fas fa-pen"></i>
+        </button>
+      </td>
+      <td>
+        <% if (car.license_plate?.image_path) { %>
+          <img src="/images/license_plates/<%= car.license_plate.image_path %>" alt="Plate" class="plate-img" />
+        <% } else { %>
+          <span>No image</span>
+        <% } %>
+      </td>
+      <td>
+        <a href="/owner-info/<%= car.license_plate?.license_plate %>">
+          <button class="view-btn">View</button>
+        </a>
+      </td>
+    </tr>
+  <% }) %>
+</tbody>
     </table>
   </div>
 
@@ -136,3 +135,20 @@
 </script>
 </body>
 </html>
+<script>
+  async function longPoll() {
+    try {
+      const res = await fetch('/api/poll');
+      const result = await res.json();
+      if (result.newData) {
+        console.log('📥 Có dữ liệu mới:', result.newData);
+        location.reload();
+      }
+    } catch (err) {
+      console.error('Polling error:', err);
+    } finally {
+      setTimeout(longPoll, 1000);
+    }
+  }
+  longPoll();
+</script>

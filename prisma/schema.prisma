@@ -34,7 +34,7 @@ model vehicle_images {
   image_path       String?
   license_plate_id Int?
   image_data       String?         @db.LongText
-  license_plates   license_plates? @relation(fields: [license_plate_id], references: [id])
+  license_plate    license_plates? @relation(fields: [license_plate_id], references: [id])
 
   @@index([license_plate_id], map: "vehicle_images_license_plate_id_fkey")
 }

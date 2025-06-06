@@ -11,7 +11,13 @@ const getHomePage = async (req: Request, res: Response) => {
 const getOwnerInfo = async (req: Request, res: Response) => {
     const {lp} = req.params;
     const owner = await getOwnerInfoByLp(lp);
-    return res.render("owner-info.ejs",{
+    if (!owner) {
+    return res.render("owner-info", {
+      owner: null,
+      notFoundMessage: "Không tìm thấy thông tin chủ xe",
+    });
+  }
+    res.render("owner-info", {
         owner
     })
 }
