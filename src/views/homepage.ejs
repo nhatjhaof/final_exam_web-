@@ -135,20 +135,3 @@
 </script>
 </body>
 </html>
-<script>
-  async function longPoll() {
-    try {
-      const res = await fetch('/api/poll');
-      const result = await res.json();
-      if (result.newData) {
-        console.log('📥 Có dữ liệu mới:', result.newData);
-        location.reload();
-      }
-    } catch (err) {
-      console.error('Polling error:', err);
-    } finally {
-      setTimeout(longPoll, 1000);
-    }
-  }
-  longPoll();
-</script>

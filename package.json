@@ -5,8 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon",
-    "dev": "nodemon --watch src --watch prisma/scripts --exec ts-node prisma/scripts/startAll.ts",
-    "start:debug": "nodemon --inspect=9229 -e ts,tsx --exec node -r ts-node/register  -r tsconfig-paths/register ./src/app.ts"
+    "dev:startall": "nodemon --watch src --watch prisma/scripts --exec ts-node prisma/scripts/startAll.ts",
+    "dev:web": "nodemon --watch src --exec ts-node -r tsconfig-paths/register ./src/app.ts",
+    "dev:telegram": "python telegram/telegram_worker.py"
   },
   "nodemonConfig": {
     "watch": [
@@ -36,6 +37,7 @@
     "@types/express": "5.0.0",
     "@types/multer": "^1.4.12",
     "@types/node": "22.10.7",
+    "concurrently": "^8.2.2",
     "nodemon": "3.1.9",
     "prettier": "^3.5.3",
     "prisma": "6.3.0",
