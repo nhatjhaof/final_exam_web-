@@ -24,6 +24,7 @@ model vehicle_details {
   citizen_id          String? @db.VarChar(20)
   address             String? @db.VarChar(255)
   license_plate       String? @db.VarChar(20)
+  email               String? @db.VarChar(255)
   personal_image_data String? @db.LongText
 }
 
@@ -34,6 +35,7 @@ model vehicle_images {
   image_path       String?
   license_plate_id Int?
   image_data       String?         @db.LongText
+  paid             Boolean?        @default(false)
   license_plate    license_plates? @relation(fields: [license_plate_id], references: [id])
 
   @@index([license_plate_id], map: "vehicle_images_license_plate_id_fkey")

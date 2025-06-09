@@ -36,7 +36,7 @@ const port = 8081;
     } catch (err) {
       console.error("Auto convert error:", err);
     }
-  },1000010000);
+  },10000);
   setInterval(async () => {
   console.log("Auto mapping license plates...");
   try {

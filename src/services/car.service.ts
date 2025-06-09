@@ -48,6 +48,7 @@ const handleUpdateOwnerInfo = async (
     citizen_id: string, 
     address: string, 
     license_plate:string,
+    email:string,
     personal_image: string
 ) => {
     const oldData = await prisma.vehicle_details.findUnique({
@@ -68,6 +69,7 @@ const handleUpdateOwnerInfo = async (
             citizen_id: citizen_id,
             address: address,
             license_plate: license_plate,
+            email: email,
             ...(personal_image !== undefined && { personal_image_data: personal_image })
         }
     });
@@ -83,4 +85,16 @@ const handleUpdateOwnerInfo = async (
     }
 }
 
-export { getAllCar, getOwnerInfoByLp, handleUpdateLicensePlate, handleUpdateOwnerInfo}
+const handleUpdatePaid = async (id: number, paid: Boolean) => {
+    const paidUpdate = await prisma.vehicle_images.update({
+        where: {
+            id: id
+        },
+        data: {
+            paid: Boolean(paid)
+        }
+    });
+    return paidUpdate;
+}
+
+export { getAllCar, getOwnerInfoByLp, handleUpdateLicensePlate, handleUpdateOwnerInfo, handleUpdatePaid}

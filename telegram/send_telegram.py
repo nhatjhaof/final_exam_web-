@@ -2,33 +2,34 @@ import os
 import requests
 from dotenv import load_dotenv
 
-#  ssh -L 3307:localhost:3306 root@192.168.70.128
-
 load_dotenv()
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def sendTelegramMessage(message, image_path=None):
-    if image_path:
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
+        raise ValueError("❌ TELEGRAM_TOKEN hoặc TELEGRAM_CHAT_ID không tồn tại.")
+
+    if image_path and os.path.exists(image_path):
+        print(f"📷 Gửi ảnh kèm tin nhắn: {image_path}")
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendPhoto"
-        files = {'photo': open(image_path, 'rb')}
-        payload = {
-            "chat_id": TELEGRAM_CHAT_ID,
-            "caption": message,
-            "parse_mode": "HTML"
-        }
+        with open(image_path, "rb") as image:
+            response = requests.post(url, data={
+                "chat_id": TELEGRAM_CHAT_ID,
+                "caption": message,
+                "parse_mode": "HTML"
+            }, files={"photo": image})
     else:
+        print("✉️ Gửi tin nhắn không kèm ảnh")
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-        payload = {
+        response = requests.post(url, data={
             "chat_id": TELEGRAM_CHAT_ID,
             "text": message,
             "parse_mode": "HTML"
-        }
-        files = None
+        })
 
-    response = requests.post(url, data=payload, files=files)
-    print("Telegram:", response.status_code, response.text)
+    if response.status_code != 200:
+        raise Exception(f"Lỗi Telegram API: {response.status_code} - {response.text}")
 
-    if files:
-        files['photo'].close()
+    print("✅ Telegram đã nhận tin.")

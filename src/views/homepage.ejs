@@ -13,125 +13,193 @@
   <div class="header">Vehicle Detection System</div>
 
   <div class="container">
-    <table class="vehicle-table">
-      <thead>
-        <tr>
-          <!-- <th>Id</th> -->
-          <th>Vehicle Image</th>
-          <th>Timestamp</th>
-          <th>Speed (km/h)</th>
-          <th>License Plate</th>
-          <th>Plate Image</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-  <% cars.forEach(function (car) { %>
-    <tr data-id="<%= car.id %>">
-      <td>
-        <% if (car.image_path) { %>
-          <img src="/images/vehicle/<%= car.image_path %>" />
-        <% } else { %>
-          <span>No image</span>
-        <% } %>
-      </td>
-      <td><%= new Date(car.capture_time).toLocaleString() %></td>
-      <td><%= car.speed %></td>
-      <td>
-        <span class="plate-text" data-id="<%= car.id %>"><%= car.license_plate?.license_plate || 'N/A' %></span>
-        <input class="plate-input"
-          data-id="<%= car.id %>"
-          value="<%= car.license_plate?.license_plate || '' %>"
-          style="display: none;" />
-        <button class="edit-btn" data-id="<%= car.id %>">
-          <i class="fas fa-pen"></i>
-        </button>
-      </td>
-      <td>
-        <% if (car.license_plate?.image_path) { %>
-          <img src="/images/license_plates/<%= car.license_plate.image_path %>" alt="Plate" class="plate-img" />
-        <% } else { %>
-          <span>No image</span>
-        <% } %>
-      </td>
-      <td>
-        <a href="/owner-info/<%= car.license_plate?.license_plate %>">
-          <button class="view-btn">View</button>
-        </a>
-      </td>
-    </tr>
-  <% }) %>
-</tbody>
-    </table>
+    <div class="table-wrapper">
+      <table class="vehicle-table">
+        <thead>
+          <tr>
+            <th>Vehicle Image</th>
+            <th>Timestamp</th>
+            <th>Speed (km/h)</th>
+            <th>License Plate</th>
+            <th>Plate Image</th>
+            <th>Đã đóng phạt?</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% cars.forEach(function (car) { %>
+            <tr data-id="<%= car.id %>">
+              <td>
+                <% if (car.image_path) { %>
+                  <img src="/images/vehicle/<%= car.image_path %>" />
+                <% } else { %>
+                  <span>No image</span>
+                <% } %>
+              </td>
+              <td><%= new Date(car.capture_time).toLocaleString() %></td>
+              <td><%= car.speed %></td>
+              <td>
+                <span class="plate-text" data-id="<%= car.id %>"><%= car.license_plate?.license_plate || 'N/A' %></span>
+                <input class="plate-input"
+                       data-id="<%= car.id %>"
+                       value="<%= car.license_plate?.license_plate || '' %>"
+                       style="display: none;" />
+                <button class="edit-btn" data-id="<%= car.id %>">
+                  <i class="fas fa-pen"></i>
+                </button>
+              </td>
+              <td>
+                <% if (car.license_plate?.image_path) { %>
+                  <img src="/images/license_plates/<%= car.license_plate.image_path %>" alt="Plate" />
+                <% } else { %>
+                  <span>No image</span>
+                <% } %>
+              </td>
+              <td>
+                <span class="paid-text" data-id="<%= car.id %>">
+                  <%= car.paid ? "Đã đóng" : "Chưa đóng" %>
+                </span>
+                <select class="paid-select" data-id="<%= car.id %>" style="display: none;">
+                  <option value="true" <%= car.paid ? "selected" : "" %>>Đã đóng</option>
+                  <option value="false" <%= !car.paid ? "selected" : "" %>>Chưa đóng</option>
+                </select>
+              </td>
+
+              <td>
+                <a href="/owner-info/<%= car.license_plate?.license_plate %>">
+                  <button class="view-btn">View</button>
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <!-- Notification message -->
   <div id="notification" class="notification"></div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function showNotification(message, type) {
+        const noti = document.getElementById('notification');
+        noti.textContent = message;
+        noti.className = `notification ${type}`;
+        noti.style.display = 'block';
+        setTimeout(() => {
+          noti.style.display = 'none';
+        }, 2500);
+      }
+
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const span = document.querySelector(`.plate-text[data-id="${id}"]`);
+          const input = document.querySelector(`.plate-input[data-id="${id}"]`);
+
+          span.style.display = 'none';
+          input.style.display = 'inline';
+          input.focus();
+        });
+      });
+
+      document.querySelectorAll('.plate-input').forEach(input => {
+        input.addEventListener('keydown', async (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+
+            const id = input.dataset.id;
+            const newPlate = input.value.trim();
+
+            if (newPlate.length < 7) {
+              showNotification("Biển số phải có ít nhất 7 ký tự!", "error");
+              return;
+            }
+
+            try {
+              const res = await fetch('/update-license-plate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ vehicleId: id, license_plate: newPlate })
+              });
+
+              if (res.ok) {
+                const span = document.querySelector(`.plate-text[data-id="${id}"]`);
+                span.textContent = newPlate;
+                span.style.display = 'inline';
+                input.style.display = 'none';
+                showNotification("Cập nhật thành công!", "success");
+              } else {
+                showNotification("Không thể cập nhật!", "error");
+              }
+            } catch (err) {
+              showNotification("Lỗi kết nối server!", "error");
+            }
+          }
+        });
+      });
+    });
+  </script>
+
+  <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Show notification
-    function showNotification(message, type) {
-      const noti = document.getElementById('notification');
-      noti.textContent = message;
-      noti.className = `notification ${type}`;
-      noti.style.display = 'block';
-
-      setTimeout(() => {
-        noti.style.display = 'none';
-      }, 2500);
-    }
-
-    // Click edit to enable input
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        const span = document.querySelector(`.plate-text[data-id="${id}"]`);
-        const input = document.querySelector(`.plate-input[data-id="${id}"]`);
+    // Click để hiển thị dropdown
+    document.querySelectorAll('.paid-text').forEach(span => {
+      span.addEventListener('click', () => {
+        const id = span.dataset.id;
+        const select = document.querySelector(`.paid-select[data-id="${id}"]`);
 
         span.style.display = 'none';
-        input.style.display = 'inline';
-        input.focus();
+        select.style.display = 'inline-block';
+        select.focus();
       });
     });
 
-    // Handle Enter to save update
-    document.querySelectorAll('.plate-input').forEach(input => {
-      input.addEventListener('keydown', async (e) => {
+    // Nhấn Enter để xác nhận và cập nhật
+    document.querySelectorAll('.paid-select').forEach(select => {
+      select.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
-          e.preventDefault(); // Ngăn form submit mặc định (nếu có)
-
-          const id = input.dataset.id;
-          const newPlate = input.value.trim();
-
-          if (newPlate.length < 7) {
-            showNotification("Biển số phải có ít nhất 7 ký tự!", "error");
-            return;
-          }
+          e.preventDefault();
+          const id = select.dataset.id;
+          const newPaid = select.value === "true";
 
           try {
-            const res = await fetch('/update-license-plate', {
+            const res = await fetch('/update-paid-status', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ vehicleId: id, license_plate: newPlate })
+              body: JSON.stringify({ id: id, paid: newPaid })
             });
 
             if (res.ok) {
-              const span = document.querySelector(`.plate-text[data-id="${id}"]`);
-              span.textContent = newPlate;
+              const span = document.querySelector(`.paid-text[data-id="${id}"]`);
+              span.textContent = newPaid ? "Đã đóng" : "Chưa đóng";
               span.style.display = 'inline';
-              input.style.display = 'none';
-              showNotification("Cập nhật thành công!", "success");
+              select.style.display = 'none';
+              showNotification("Cập nhật trạng thái thành công!", "success");
             } else {
               showNotification("Không thể cập nhật!", "error");
             }
           } catch (err) {
+            console.log("loi fetch", err)
             showNotification("Lỗi kết nối server!", "error");
           }
         }
       });
     });
+
+    // Thông báo
+    function showNotification(message, type) {
+      const noti = document.getElementById('notification');
+      noti.textContent = message;
+      noti.className = `notification ${type}`;
+      noti.style.display = 'block';
+      setTimeout(() => {
+        noti.style.display = 'none';
+      }, 2500);
+    }
   });
 </script>
+
 </body>
+
 </html>

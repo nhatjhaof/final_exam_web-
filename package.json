@@ -2,13 +2,13 @@
   "name": "final_exam_web-",
   "version": "1.0.0",
   "main": "dist/app.js",
-  "scripts": {
+   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon",
-    "dev:startall": "nodemon --watch src --watch prisma/scripts --exec ts-node prisma/scripts/startAll.ts",
-    "dev:web": "nodemon --watch src --exec ts-node -r tsconfig-paths/register ./src/app.ts",
-    "dev:telegram": "python telegram/telegram_worker.py"
+    "dev": "nodemon --watch src --watch prisma/scripts --exec ts-node prisma/scripts/startAll.ts",
+    "start:debug": "nodemon --inspect=9229 -e ts,tsx --exec node -r ts-node/register  -r tsconfig-paths/register ./src/app.ts"
   },
+
   "nodemonConfig": {
     "watch": [
       "src",
@@ -16,7 +16,7 @@
     ],
     "ext": "ts,ejs",
     "ignore": [
-      "node_modules"
+      "node_modules","public/images", "uploads", "dist"
     ],
     "exec": "ts-node -r tsconfig-paths/register ./src/app.ts"
   },

@@ -37,22 +37,27 @@
 
         <div class="mb-3">
           <label for="phone_number">📱 Số điện thoại</label>
-          <input type="text" value="<%= owner.phone_number || '' %>" name="phone_number" placeholder="Nhập số điện thoại" />
+          <input type="text" value="<%= owner.phone_number || '' %>" name="phone_number" placeholder="Nhập số điện thoại" readonly/>
         </div>
 
         <div class="mb-3">
           <label for="citizen_id">🆔 Số CCCD</label>
-          <input type="text" value="<%= owner.citizen_id || '' %>" name="citizen_id" placeholder="Nhập số căn cước công dân" />
+          <input type="text" value="<%= owner.citizen_id || '' %>" name="citizen_id" placeholder="Nhập số căn cước công dân" readonly/>
         </div>
 
         <div class="mb-3">
           <label for="address">🏠 Địa chỉ</label>
-          <input type="text" value="<%= owner.address || '' %>" name="address" placeholder="Nhập địa chỉ" />
+          <input type="text" value="<%= owner.address || '' %>" name="address" placeholder="Nhập địa chỉ" readonly/>
         </div>
 
         <div class="mb-3">
           <label for="license_plate">🚗 Biển số xe</label>
           <input type="text" value="<%= owner.license_plate || '' %>" name="license_plate" placeholder="Nhập biển số xe" />
+        </div>
+
+        <div class="mb-3">
+           <label for="email  ">📧 Email</label>
+          <input type="email" value="<%= owner.email || '' %>" name="email" placeholder="Nhập email" />
         </div>
 
         <div class="mb-3">
